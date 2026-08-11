@@ -1,0 +1,141 @@
+<svg id="lm-logo" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="lm-logo-title">
+  <title id="lm-logo-title">Lumen Metrics — Metrology to Life</title>
+
+  <defs>
+    <linearGradient id="lm-grad-violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8a6ff"/>
+      <stop offset="45%" stop-color="#b56ce8"/>
+      <stop offset="100%" stop-color="#7a3fc9"/>
+    </linearGradient>
+
+    <linearGradient id="lm-grad-magenta" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8fd6"/>
+      <stop offset="50%" stop-color="#d13fb0"/>
+      <stop offset="100%" stop-color="#8f2588"/>
+    </linearGradient>
+
+    <linearGradient id="lm-grad-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd28a"/>
+      <stop offset="45%" stop-color="#f7943f"/>
+      <stop offset="100%" stop-color="#c2500f"/>
+    </linearGradient>
+
+    <radialGradient id="lm-grad-core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#bfefff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#bfefff" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="lm-grad-wordmark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f7fa"/>
+      <stop offset="100%" stop-color="#9aa3b2"/>
+    </linearGradient>
+
+    <filter id="lm-blur-soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+
+    <filter id="lm-blur-glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+
+    <filter id="lm-blur-wide" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+  </defs>
+
+  <!-- ============ CORE GLOW (behind prism, light source point) ============ -->
+  <g id="lm-logo-core-glow">
+    <circle cx="472" cy="330" r="130" fill="url(#lm-grad-core)" filter="url(#lm-blur-wide)"/>
+  </g>
+
+  <!-- ============ SPECTRUM RAYS (emerge right from prism) ============ -->
+  <g id="lm-logo-rays" stroke-linecap="round">
+    <!-- glow pass -->
+    <g id="lm-logo-rays-glow" filter="url(#lm-blur-glow)" opacity="0.55">
+      <line x1="472" y1="330" x2="860" y2="200" stroke="#ff4d4d" stroke-width="10"/>
+      <line x1="472" y1="330" x2="870" y2="245" stroke="#ff9f43" stroke-width="9"/>
+      <line x1="472" y1="330" x2="878" y2="290" stroke="#ffe14d" stroke-width="8"/>
+      <line x1="472" y1="330" x2="882" y2="335" stroke="#4dff9f" stroke-width="9"/>
+      <line x1="472" y1="330" x2="876" y2="380" stroke="#4dd7ff" stroke-width="8"/>
+      <line x1="472" y1="330" x2="864" y2="422" stroke="#5f7bff" stroke-width="9"/>
+      <line x1="472" y1="330" x2="846" y2="460" stroke="#b45fff" stroke-width="10"/>
+    </g>
+    <!-- crisp pass -->
+    <g id="lm-logo-rays-core" opacity="0.9">
+      <line x1="472" y1="330" x2="860" y2="200" stroke="#ff5c5c" stroke-width="3"/>
+      <line x1="472" y1="330" x2="870" y2="245" stroke="#ffab5c" stroke-width="2.6"/>
+      <line x1="472" y1="330" x2="878" y2="290" stroke="#ffe75c" stroke-width="2.2"/>
+      <line x1="472" y1="330" x2="882" y2="335" stroke="#5cffab" stroke-width="2.6"/>
+      <line x1="472" y1="330" x2="876" y2="380" stroke="#5ce1ff" stroke-width="2.2"/>
+      <line x1="472" y1="330" x2="864" y2="422" stroke="#7c8fff" stroke-width="2.6"/>
+      <line x1="472" y1="330" x2="846" y2="460" stroke="#c98cff" stroke-width="3"/>
+    </g>
+    <!-- incoming white light beam (from left, into prism) -->
+    <g id="lm-logo-ray-incoming">
+      <line x1="60" y1="330" x2="472" y2="330" stroke="#ffffff" stroke-width="3" opacity="0.85"/>
+      <line x1="60" y1="330" x2="472" y2="330" stroke="#ffffff" stroke-width="14" opacity="0.25" filter="url(#lm-blur-soft)"/>
+    </g>
+  </g>
+
+  <!-- ============ MEASUREMENT SCALE (arc + ticks, upper right of prism) ============ -->
+  <g id="lm-logo-scale" stroke="#c7cedb" fill="none" opacity="0.9">
+    <path id="lm-logo-scale-arc" d="M 560 175 A 150 150 0 0 1 640 300" stroke-width="2" stroke-linecap="round"/>
+    <g id="lm-logo-scale-ticks" stroke-width="2" stroke-linecap="round">
+      <line x1="560" y1="175" x2="548" y2="163"/>
+      <line x1="583" y1="168" x2="573" y2="154"/>
+      <line x1="607" y1="167" x2="600" y2="152"/>
+      <line x1="629" y1="174" x2="625" y2="158"/>
+      <line x1="640" y1="300" x2="656" y2="304"/>
+    </g>
+  </g>
+
+  <!-- ============ PRISM ============ -->
+  <g id="lm-logo-prism">
+    <!-- left face: violet/magenta -->
+    <g id="lm-logo-prism-face-left">
+      <polygon points="472,150 300,430 472,430" fill="url(#lm-grad-violet)"/>
+      <polygon points="472,150 300,430 472,430" fill="url(#lm-grad-magenta)" opacity="0.35"/>
+    </g>
+
+    <!-- right face: amber/orange -->
+    <g id="lm-logo-prism-face-right">
+      <polygon points="472,150 472,430 645,430" fill="url(#lm-grad-amber)"/>
+    </g>
+
+    <!-- inner facet line (glass edge) -->
+    <g id="lm-logo-prism-edges" stroke="#ffffff" stroke-linecap="round" opacity="0.55">
+      <line x1="472" y1="150" x2="472" y2="430" stroke-width="1.5"/>
+      <line x1="300" y1="430" x2="472" y2="150" stroke-width="1.5" opacity="0.7"/>
+      <line x1="645" y1="430" x2="472" y2="150" stroke-width="1.5" opacity="0.7"/>
+    </g>
+
+    <!-- glass highlight sliver on left face -->
+    <polygon id="lm-logo-prism-highlight" points="440,190 472,150 472,300" fill="#ffffff" opacity="0.18"/>
+
+    <!-- base line -->
+    <line x1="300" y1="430" x2="645" y2="430" stroke="#1a0f14" stroke-width="2" opacity="0.4"/>
+
+    <!-- core sparkle at refraction point -->
+    <circle id="lm-logo-prism-core" cx="472" cy="330" r="10" fill="#ffffff" opacity="0.9" filter="url(#lm-blur-soft)"/>
+  </g>
+
+  <!-- ============ WORDMARK ============ -->
+  <g id="lm-logo-wordmark-group" text-anchor="middle">
+    <text id="lm-logo-wordmark"
+          x="450" y="540"
+          font-family="'Arial Narrow', 'Helvetica Neue', Arial, sans-serif"
+          font-weight="700"
+          font-size="72"
+          letter-spacing="6"
+          fill="url(#lm-grad-wordmark)">LUMEN METRICS</text>
+
+    <text id="lm-logo-tagline"
+          x="450" y="578"
+          font-family="'Helvetica Neue', Arial, sans-serif"
+          font-weight="400"
+          font-size="24"
+          letter-spacing="8"
+          fill="#4fd8e0">METROLOGY TO LIFE</text>
+  </g>
+</svg>
