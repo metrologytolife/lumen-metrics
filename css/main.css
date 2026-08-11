@@ -1,1 +1,21 @@
+:root {
+  --lm-bg-deep: #05070d;
+  --lm-bg-navy: #0a0e1a;
+  --lm-cyan: #4fd8e0;
+  --lm-violet: #8b5fe0;
+  --lm-magenta: #d13fb0;
+  --lm-white: #f5f7fa;
+  --lm-grey: #9aa3b2;
+}
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--lm-bg-deep);
+  color: var(--lm-white);
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+#lm-app { min-height: 100vh; }
