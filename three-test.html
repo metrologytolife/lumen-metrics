@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three.js Lesson 1</title>
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #05070d; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+
+// 1. SCENE — the empty container
+const scene = new THREE.Scene();
+
+// 2. CAMERA — our viewpoint
+// PerspectiveCamera(field-of-view, aspect-ratio, near-clip, far-clip)
+const camera = new THREE.PerspectiveCamera(
+  50,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  100
+);
+camera.position.z = 5; // step back so we can see the object at origin
+
+// 3. RENDERER — draws scene+camera onto a canvas
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // cap for phone performance
+document.body.appendChild(renderer.domElement);
+
+// A plain cube — no fancy material yet, just to prove the pipeline works
+const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+const material = new THREE.MeshNormalMaterial(); // shows each face a different color, no lights needed
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+// THE RENDER LOOP — runs every frame (~60 times/sec)
+function animate() {
+  requestAnimationFrame(animate);
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+animate();
+
+// keep it responsive if the phone rotates / window resizes
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
