@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Three.js Lesson 1</title>
+<title>Three.js Lesson 2</title>
 <style>
   html, body { margin: 0; padding: 0; overflow: hidden; background: #05070d; }
   canvas { display: block; }
@@ -22,41 +22,46 @@
 <script type="module">
 import * as THREE from "three";
 
-// 1. SCENE — the empty container
 const scene = new THREE.Scene();
 
-// 2. CAMERA — our viewpoint
-// PerspectiveCamera(field-of-view, aspect-ratio, near-clip, far-clip)
 const camera = new THREE.PerspectiveCamera(
   50,
   window.innerWidth / window.innerHeight,
   0.1,
   100
 );
-camera.position.z = 5; // step back so we can see the object at origin
+camera.position.z = 5;
+camera.position.y = 0.3; // slight downward angle onto the prism, like your reference
 
-// 3. RENDERER — draws scene+camera onto a canvas
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // cap for phone performance
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 document.body.appendChild(renderer.domElement);
 
-// A plain cube — no fancy material yet, just to prove the pipeline works
-const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-const material = new THREE.MeshNormalMaterial(); // shows each face a different color, no lights needed
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// ============ THE PRISM GEOMETRY ============
+// ConeGeometry(radiusAtBase, height, radialSegments)
+// radialSegments = 3 turns the "cone" into a 3-sided pyramid
+const geometry = new THREE.ConeGeometry(1.3, 2, 3);
 
-// THE RENDER LOOP — runs every frame (~60 times/sec)
+const material = new THREE.MeshNormalMaterial();
+const prism = new THREE.Mesh(geometry, material);
+
+// A ConeGeometry's flat side faces straight at the camera by default.
+// We rotate it so an EDGE faces the camera instead — that's what reveals
+// two distinct lit faces (left + right), matching your reference image.
+prism.rotation.y = Math.PI / 6; // 30 degrees
+
+scene.add(prism);
+
 function animate() {
   requestAnimationFrame(animate);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  // slow auto-rotate so you can inspect the shape from all angles for now
+  // (we'll remove this once we lock the final camera angle)
+  prism.rotation.y += 0.005;
   renderer.render(scene, camera);
 }
 animate();
 
-// keep it responsive if the phone rotates / window resizes
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
