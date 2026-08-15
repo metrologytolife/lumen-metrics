@@ -203,7 +203,17 @@ const particleMaterial = new THREE.PointsMaterial({
 
 const particleField = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(particleField);
-  
+  // ============ GROUND PLANE — reflective surface under the prism ============
+const groundGeometry = new THREE.PlaneGeometry(20, 20);
+const groundMaterial = new THREE.MeshStandardMaterial({
+  color: 0x0a0a0c,
+  roughness: 0.25,
+  metalness: 0.6,
+});
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1.05; // just below the prism's base
+scene.add(ground);
 function animate() {
   requestAnimationFrame(animate);
   prism.rotation.y += 0.005;
