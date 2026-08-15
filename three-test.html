@@ -98,7 +98,7 @@ const rayOrigin = new THREE.Vector3(0.15, 0, 0.3);
 const spectrumColors = [0xff3b3b, 0xff9f43, 0xffe14d, 0x4dff9f, 0x4dd7ff, 0x5f7bff, 0xb45fff];
 
 spectrumColors.forEach((hex, i) => {
-  const spread = (i - (spectrumColors.length - 1) / 2) * 0.35; // vertical fan angle
+  const spread = (i - (spectrumColors.length - 1) / 2) * 0.75; // vertical fan angle
   const end = new THREE.Vector3(rayOrigin.x + 3, rayOrigin.y + spread, rayOrigin.z);
 
   const rayGeometry = new THREE.BufferGeometry().setFromPoints([rayOrigin, end]);
