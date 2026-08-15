@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Three.js Lesson 4</title>
+<title>Three.js Lesson 5</title>
 <style>
   html, body { margin: 0; padding: 0; overflow: hidden; background: #05070d; }
   canvas { display: block; }
@@ -23,6 +23,10 @@
 <script type="module">
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
 const scene = new THREE.Scene();
 
@@ -52,27 +56,24 @@ scene.add(sunLight);
 const ambient = new THREE.AmbientLight(0x404060, 0.6);
 scene.add(ambient);
 
-// ============ PRISM GEOMETRY ============
 const geometry = new THREE.ConeGeometry(1.3, 2, 3);
 
-// ============ NEW: PER-VERTEX COLOR (left = violet, right = amber) ============
 const posAttr = geometry.attributes.position;
 const colors = [];
 const violet = new THREE.Color(0x9b5de5);
 const amber = new THREE.Color(0xf7943f);
 
 for (let i = 0; i < posAttr.count; i++) {
-  const x = posAttr.getX(i);                          // this vertex's left/right position
-  const t = THREE.MathUtils.clamp((x + 1.3) / 2.6, 0, 1); // map x range to 0-1
-  const vertexColor = violet.clone().lerp(amber, t);   // blend violet -> amber
+  const x = posAttr.getX(i);
+  const t = THREE.MathUtils.clamp((x + 1.3) / 2.6, 0, 1);
+  const vertexColor = violet.clone().lerp(amber, t);
   colors.push(vertexColor.r, vertexColor.g, vertexColor.b);
 }
 geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-// ============ MATERIAL — now reads vertex colors ============
 const material = new THREE.MeshPhysicalMaterial({
-  color: 0xffffff,        // white base so vertex colors aren't further tinted
-  vertexColors: true,     // NEW — tells the material to use the per-vertex colors above
+  color: 0xffffff,
+  vertexColors: true,
   transmission: 1.0,
   roughness: 0.05,
   ior: 1.6,
@@ -85,10 +86,31 @@ const prism = new THREE.Mesh(geometry, material);
 prism.rotation.y = Math.PI / 6;
 scene.add(prism);
 
+// ============ NEW: a small bright "core" sphere, to give bloom something to bloom ============
+const coreGeometry = new THREE.SphereGeometry(0.12, 16, 16);
+const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // unlit, pure bright color
+const core = new THREE.Mesh(coreGeometry, coreMaterial);
+core.position.set(0, 0, 0.3); // sits at the prism's refraction point
+scene.add(core);
+
+// ============ NEW: POST-PROCESSING CHAIN ============
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera)); // step 1: normal render
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.9,   // strength
+  0.6,   // radius
+  0.75   // threshold — only things brighter than this bloom
+);
+composer.addPass(bloomPass); // step 2: bloom the bright parts
+
+composer.addPass(new OutputPass()); // step 3: correct color output after post-processing
+
 function animate() {
   requestAnimationFrame(animate);
   prism.rotation.y += 0.005;
-  renderer.render(scene, camera);
+  composer.render(); // NOTE: composer.render() replaces renderer.render()
 }
 animate();
 
@@ -96,6 +118,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
 </script>
 
