@@ -156,7 +156,7 @@ const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
   0.9,   // strength
   0.6,   // radius
-  0.75   // threshold — only things brighter than this bloom
+  0.55   // threshold — only things brighter than this bloom
 );
 composer.addPass(bloomPass); // step 2: bloom the bright parts
 
