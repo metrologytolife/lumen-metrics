@@ -129,7 +129,7 @@ for (let i = 0; i < segments; i++) {
 
   const c1 = spectrumColorAt(t1);
   const c2 = spectrumColorAt(t2);
-  rayColors.push(white.r, white.g, white.b, c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
+  rayColors.push(1.0, 0.95, 0.85, c1.r, c1.g, c1.b, c2.r, c2.g, c2.b); // soft warm-white, not max brightness
 }
 
 const rayGeometry = new THREE.BufferGeometry();
@@ -154,9 +154,9 @@ composer.addPass(new RenderPass(scene, camera)); // step 1: normal render
 
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
-  0.9,   // strength
-  0.6,   // radius
-  0.55   // threshold — only things brighter than this bloom
+  0.55,   // strength
+  0.3,   // radius
+  0.85   // threshold — only things brighter than this bloom
 );
 composer.addPass(bloomPass); // step 2: bloom the bright parts
 
