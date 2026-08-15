@@ -139,9 +139,10 @@ rayGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rayColors, 3)
 const rayMaterial = new THREE.MeshBasicMaterial({
   vertexColors: true,
   transparent: true,
-  opacity: 0.55,
+  opacity: 0.85,
   side: THREE.DoubleSide,
-  blending: THREE.AdditiveBlending, // rays add light rather than sit as flat opaque color, like real light
+  blending: THREE.AdditiveBlending,
+  toneMapped: false, // FIX: skip filmic tone mapping so saturated hues don't wash to white
 });
 
 const raySpectrum = new THREE.Mesh(rayGeometry, rayMaterial);
