@@ -163,7 +163,47 @@ const bloomPass = new UnrealBloomPass(
 composer.addPass(bloomPass); // step 2: bloom the bright parts
 
 composer.addPass(new OutputPass()); // step 3: correct color output after post-processing
+  
+// ============ PARTICLE FIELD — deep space dust/stars ============
+const particleCount = 800;
+const particlePositions = new Float32Array(particleCount * 3);
+const particleColors = new Float32Array(particleCount * 3);
 
+const particlePalette = [
+  new THREE.Color(0xffffff),
+  new THREE.Color(0x9fd8ff),
+  new THREE.Color(0xd9b8ff),
+  new THREE.Color(0xffd9a0),
+];
+
+for (let i = 0; i < particleCount; i++) {
+  particlePositions[i * 3] = (Math.random() - 0.5) * 14;         // x spread
+  particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;     // y spread
+  particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2;  // z, pushed behind the prism
+
+  const c = particlePalette[Math.floor(Math.random() * particlePalette.length)];
+  particleColors[i * 3] = c.r;
+  particleColors[i * 3 + 1] = c.g;
+  particleColors[i * 3 + 2] = c.b;
+}
+
+const particleGeometry = new THREE.BufferGeometry();
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+
+const particleMaterial = new THREE.PointsMaterial({
+  size: 0.025,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.8,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  toneMapped: false,
+});
+
+const particleField = new THREE.Points(particleGeometry, particleMaterial);
+scene.add(particleField);
+  
 function animate() {
   requestAnimationFrame(animate);
   prism.rotation.y += 0.005;
