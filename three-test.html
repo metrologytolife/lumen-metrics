@@ -93,19 +93,59 @@ const core = new THREE.Mesh(coreGeometry, coreMaterial);
 core.position.set(0.15, 0, 0.3);
 scene.add(core);
 
-// ============ NEW: SPECTRUM RAYS ============
+// ============ SPECTRUM RAYS — continuous gradient fan, not discrete lines ============
 const rayOrigin = new THREE.Vector3(0.15, 0, 0.3);
-const spectrumColors = [0xff3b3b, 0xff9f43, 0xffe14d, 0x4dff9f, 0x4dd7ff, 0x5f7bff, 0xb45fff];
+const rayLength = 3;
+const raySpreadHalf = 1.1;   // vertical half-spread at far end
+const segments = 60;          // more segments = smoother gradient
 
-spectrumColors.forEach((hex, i) => {
-  const spread = (i - (spectrumColors.length - 1) / 2) * 0.75; // vertical fan angle
-  const end = new THREE.Vector3(rayOrigin.x + 3, rayOrigin.y + spread, rayOrigin.z);
+const spectrumStops = [0xff3b3b, 0xff9f43, 0xffe14d, 0x4dff9f, 0x4dd7ff, 0x5f7bff, 0xb45fff]
+  .map(h => new THREE.Color(h));
 
-  const rayGeometry = new THREE.BufferGeometry().setFromPoints([rayOrigin, end]);
-  const rayMaterial = new THREE.LineBasicMaterial({ color: hex, transparent: true, opacity: 0.9 });
-  const ray = new THREE.Line(rayGeometry, rayMaterial);
-  scene.add(ray);
+function spectrumColorAt(t) {
+  const scaled = t * (spectrumStops.length - 1);
+  const idx = Math.floor(scaled);
+  const frac = scaled - idx;
+  const c1 = spectrumStops[idx];
+  const c2 = spectrumStops[Math.min(idx + 1, spectrumStops.length - 1)];
+  return c1.clone().lerp(c2, frac);
+}
+
+const rayPositions = [];
+const rayColors = [];
+const white = new THREE.Color(0xffffff);
+
+for (let i = 0; i < segments; i++) {
+  const t1 = i / segments;
+  const t2 = (i + 1) / segments;
+  const y1 = THREE.MathUtils.lerp(-raySpreadHalf, raySpreadHalf, t1);
+  const y2 = THREE.MathUtils.lerp(-raySpreadHalf, raySpreadHalf, t2);
+
+  const p1 = new THREE.Vector3(rayOrigin.x + rayLength, y1, rayOrigin.z);
+  const p2 = new THREE.Vector3(rayOrigin.x + rayLength, y2, rayOrigin.z);
+
+  // triangle: origin (bright white core) -> edge point 1 -> edge point 2
+  rayPositions.push(rayOrigin.x, rayOrigin.y, rayOrigin.z, p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
+
+  const c1 = spectrumColorAt(t1);
+  const c2 = spectrumColorAt(t2);
+  rayColors.push(white.r, white.g, white.b, c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
+}
+
+const rayGeometry = new THREE.BufferGeometry();
+rayGeometry.setAttribute('position', new THREE.Float32BufferAttribute(rayPositions, 3));
+rayGeometry.setAttribute('color', new THREE.Float32BufferAttribute(rayColors, 3));
+
+const rayMaterial = new THREE.MeshBasicMaterial({
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.55,
+  side: THREE.DoubleSide,
+  blending: THREE.AdditiveBlending, // rays add light rather than sit as flat opaque color, like real light
 });
+
+const raySpectrum = new THREE.Mesh(rayGeometry, rayMaterial);
+scene.add(raySpectrum);
   
 // ============ NEW: POST-PROCESSING CHAIN ============
 const composer = new EffectComposer(renderer);
