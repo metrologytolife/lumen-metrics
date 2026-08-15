@@ -86,13 +86,27 @@ const prism = new THREE.Mesh(geometry, material);
 prism.rotation.y = Math.PI / 6;
 scene.add(prism);
 
-// ============ NEW: a small bright "core" sphere, to give bloom something to bloom ============
-const coreGeometry = new THREE.SphereGeometry(0.12, 16, 16);
-const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // unlit, pure bright color
+// core sparkle at the refraction point
+const coreGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const core = new THREE.Mesh(coreGeometry, coreMaterial);
-core.position.set(0, 0, 0.3); // sits at the prism's refraction point
+core.position.set(0.15, 0, 0.3);
 scene.add(core);
 
+// ============ NEW: SPECTRUM RAYS ============
+const rayOrigin = new THREE.Vector3(0.15, 0, 0.3);
+const spectrumColors = [0xff3b3b, 0xff9f43, 0xffe14d, 0x4dff9f, 0x4dd7ff, 0x5f7bff, 0xb45fff];
+
+spectrumColors.forEach((hex, i) => {
+  const spread = (i - (spectrumColors.length - 1) / 2) * 0.35; // vertical fan angle
+  const end = new THREE.Vector3(rayOrigin.x + 3, rayOrigin.y + spread, rayOrigin.z);
+
+  const rayGeometry = new THREE.BufferGeometry().setFromPoints([rayOrigin, end]);
+  const rayMaterial = new THREE.LineBasicMaterial({ color: hex, transparent: true, opacity: 0.9 });
+  const ray = new THREE.Line(rayGeometry, rayMaterial);
+  scene.add(ray);
+});
+  
 // ============ NEW: POST-PROCESSING CHAIN ============
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera)); // step 1: normal render
