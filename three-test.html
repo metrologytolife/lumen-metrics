@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Three.js Lesson 2</title>
+<title>Three.js Lesson 3</title>
 <style>
   html, body { margin: 0; padding: 0; overflow: hidden; background: #05070d; }
   canvas { display: block; }
@@ -14,13 +14,15 @@
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
   }
 }
 </script>
 
 <script type="module">
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const scene = new THREE.Scene();
 
@@ -31,32 +33,50 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 camera.position.z = 5;
-camera.position.y = 0.3; // slight downward angle onto the prism, like your reference
+camera.position.y = 0.3;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// physically-based rendering needs correct tone mapping to look right,
+// otherwise bright highlights get harshly clipped instead of glowing naturally
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
 document.body.appendChild(renderer.domElement);
 
-// ============ THE PRISM GEOMETRY ============
-// ConeGeometry(radiusAtBase, height, radialSegments)
-// radialSegments = 3 turns the "cone" into a 3-sided pyramid
+// ============ ENVIRONMENT (what the glass reflects) ============
+// PMREMGenerator processes the environment so it lights materials realistically
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+
+// ============ LIGHT (the "sun", from the left, matching your storyboard) ============
+const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
+sunLight.position.set(-4, 2, 3);
+scene.add(sunLight);
+
+// a little ambient fill so the shadow side of the prism isn't pure black
+const ambient = new THREE.AmbientLight(0x404060, 0.6);
+scene.add(ambient);
+
+// ============ PRISM — same geometry as Lesson 2, new material ============
 const geometry = new THREE.ConeGeometry(1.3, 2, 3);
 
-const material = new THREE.MeshNormalMaterial();
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff,
+  transmission: 1.0,      // fully glass-like — light passes through
+  roughness: 0.05,        // near-zero = clear glass, not frosted
+  ior: 1.6,                // index of refraction, close to real glass/crystal
+  thickness: 1.5,          // how "deep" the glass appears, affects refraction strength
+  clearcoat: 1.0,          // an extra glossy top layer, adds a sharp highlight
+  clearcoatRoughness: 0.1,
+});
+
 const prism = new THREE.Mesh(geometry, material);
-
-// A ConeGeometry's flat side faces straight at the camera by default.
-// We rotate it so an EDGE faces the camera instead — that's what reveals
-// two distinct lit faces (left + right), matching your reference image.
-prism.rotation.y = Math.PI / 6; // 30 degrees
-
+prism.rotation.y = Math.PI / 6;
 scene.add(prism);
 
 function animate() {
   requestAnimationFrame(animate);
-  // slow auto-rotate so you can inspect the shape from all angles for now
-  // (we'll remove this once we lock the final camera angle)
   prism.rotation.y += 0.005;
   renderer.render(scene, camera);
 }
